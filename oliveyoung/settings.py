@@ -12,6 +12,14 @@ BOT_NAME = "oliveyoung"
 SPIDER_MODULES = ["oliveyoung.spiders"]
 NEWSPIDER_MODULE = "oliveyoung.spiders"
 
+MONGO_URI = "mongodb://localhost:27017"
+MONGO_DATABASE = "olive_db"
+
+# Configure item pipelines
+# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
+ITEM_PIPELINES = {
+   "oliveyoung.pipelines.OliveyoungPipeline": 300,
+}
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
@@ -60,12 +68,6 @@ ROBOTSTXT_OBEY = False
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
 #EXTENSIONS = {
 #    "scrapy.extensions.telnet.TelnetConsole": None,
-#}
-
-# Configure item pipelines
-# See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    "oliveyoung.pipelines.OliveyoungPipeline": 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)

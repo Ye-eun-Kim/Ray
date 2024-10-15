@@ -9,6 +9,9 @@ from oliveyoung.items import OliveyoungItem
 class ProductSpider(scrapy.Spider):
     name = "oliveyoung"
     allowed_domains = ["www.oliveyoung.co.kr"]
+    # # 페이지 수 제한 설정
+    # max_page = 3
+    # current_page = 1
 
     def start_requests(self):
         # 올리브영 에센스/세럼/앰플군
@@ -22,23 +25,17 @@ class ProductSpider(scrapy.Spider):
     def parse(self, response):
         for products in response.xpath('//ul[@class="cate_prd_list gtm_cate_list"]'):
             for product in products.xpath('.//div[@class="prd_info "]'):
-                # item = OliveyoungItem()
-                #
-                # item['name'] = product.xpath('.//p[@class="tx_name"]/text()').get()
-                # item['price'] = product.xpath('.//span[@class="tx_cur"]/span[@class="tx_num"]/text()').get()
-                # item['brand'] = product.xpath('.//span[@class="tx_brand"]/text()').get()
-                # item['url'] = product.xpath('./a/@href').get()
-                #
-                # yield item
-                loader = ItemLoader(item=OliveyoungItem(), selector=product)
-                loader.add_xpath('name', './/p[@class="tx_name"]/text()')
-                loader.add_xpath('price', './/span[@class="tx_cur"]/span[@class="tx_num"]/text()')
-                loader.add_xpath('brand', './/span[@class="tx_brand"]/text()')
-                loader.add_xpath('url', './a/@href')
-                yield loader.load_item()
+                item = OliveyoungItem()
+                item['name'] = product.xpath('.//p[@class="tx_name"]/text()').get()
+                item['price'] = product.xpath('.//span[@class="tx_cur"]/span[@class="tx_num"]/text()').get()
+                item['brand'] = product.xpath('.//span[@class="tx_brand"]/text()').get()
+                item['url'] = product.xpath('./a/@href').get()
+                yield item
 
         # 다음 페이지로 이동
         curr_page = response.xpath('//strong[@title="현재 페이지"]/text()').get()
+        if curr_page == 3:
+            exit()
         next_page_url = response.xpath('//strong[@title="현재 페이지"]/following-sibling::a/@data-page-no').get()
 
         # 다음 페이지 없으면 None
@@ -47,6 +44,30 @@ class ProductSpider(scrapy.Spider):
             yield scrapy.Request(url=next_page_full_url, callback=self.parse)
         else:
             self.log("No more pages.")
+
+
+    # def practice(self, response):
+    #     for products in response.xpath('//ul[@class="cate_prd_list gtm_cate_list"]'):
+    #         for product in products.xpath('.//div[@class="prd_info "]'):
+    #             item = OliveyoungItem()
+    #             item['name'] = product.xpath('.//p[@class="tx_name"]/text()').get()
+    #             item['price'] = product.xpath('.//span[@class="tx_cur"]/span[@class="tx_num"]/text()').get()
+    #             item['brand'] = product.xpath('.//span[@class="tx_brand"]/text()').get()
+    #             item['url'] = product.xpath('./a/@href').get()
+    #             yield item
+    #     # 현재 페이지 수가 최대 페이지 수보다 작을 때만 다음 페이지로 이동
+    #     if self.current_page < self.max_page:
+    #         self.current_page += 1
+    #         next_page_url = response.xpath('//strong[@title="현재 페이지"]/following-sibling::a/@data-page-no').get()
+    #
+    #         if next_page_url:
+    #             next_page_full_url = response.url.replace(f'pageIdx={self.current_page - 1}',
+    #                                                       f'pageIdx={self.current_page}')
+    #             yield scrapy.Request(url=next_page_full_url, callback=self.parse)
+    #         else:
+    #             self.log("No more pages.")
+    #     else:
+    #         self.log("Reached max page limit. Stopping.")
 
 
 if __name__ == "__main__":

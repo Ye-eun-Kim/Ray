@@ -1,2 +1,4 @@
 scrapy==2.8.0
 Twisted==22.10.0
+pymongo==4.10.1
+dnspython==2.7.0
