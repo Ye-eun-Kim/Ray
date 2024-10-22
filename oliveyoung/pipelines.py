@@ -1,7 +1,6 @@
 import hashlib
 import pymongo
 from itemadapter import ItemAdapter
-from scrapy.exceptions import DropItem
 
 class OliveyoungPipeline:
     COLLECTION_NAME = "products"
