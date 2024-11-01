@@ -6,3 +6,4 @@ class OliveyoungItem(Item):
     price = Field()
     brand = Field()
     url = Field()
+    time = Field()
