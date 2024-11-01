@@ -5,8 +5,6 @@ from scrapy.utils.project import get_project_settings
 from oliveyoung.items import OliveyoungItem
 from datetime import datetime
 
-ray.init(ignore_reinit_error=True)
-
 
 @ray.remote
 def run_spider(start_url):
@@ -55,6 +53,9 @@ class ProductRaySpider(scrapy.Spider):
 
 
 if __name__ == "__main__":
+    print(0)
+    ray.init()
+    print(1)
 
     start_time = datetime.now() # 시작 시간 기록
     print(f'Started at: {start_time}')
