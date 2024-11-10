@@ -1,3 +1,5 @@
+import sys
+sys.path.append('C:/Users/Yeeun Kim/Ray')
 import scrapy
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
@@ -5,12 +7,11 @@ from oliveyoung.items import OliveyoungItem
 from twisted.internet import reactor
 from datetime import datetime
 
-
 class ProductNoRaySpider(scrapy.Spider):
     name = "oliveyoung_no_ray"
     allowed_domains = ["www.oliveyoung.co.kr"]
     # FOR TEST: 페이지 수 제한 설정
-    max_page = 3
+    # max_page = 3
 
     start_urls = [
         'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=100000100010014&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=48&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=0&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat100000100010014_Small&amplitudePageGubun=&t_page=&t_click=&midCategory=%EC%97%90%EC%84%BC%EC%8A%A4%2F%EC%84%B8%EB%9F%BC%2F%EC%95%B0%ED%94%8C&smallCategory=%EC%A0%84%EC%B2%B4&checkBrnds=&lastChkBrnd=',
@@ -26,13 +27,14 @@ class ProductNoRaySpider(scrapy.Spider):
                 item['price'] = product.xpath('.//span[@class="tx_cur"]/span[@class="tx_num"]/text()').get()
                 item['brand'] = product.xpath('.//span[@class="tx_brand"]/text()').get()
                 item['url'] = product.xpath('./a/@href').get()
+                item['time'] = datetime.now().strftime('%m-%d %H:%M')
                 yield item
 
         # 다음 페이지로 이동
         curr_page = response.xpath('//strong[@title="현재 페이지"]/text()').get()
 
-        if curr_page and int(curr_page) >= self.max_page:  # FOR_TEST
-            return
+        # if curr_page and int(curr_page) >= self.max_page:  # FOR_TEST
+        #     return
 
         next_page_url = response.xpath('//strong[@title="현재 페이지"]/following-sibling::a/@data-page-no').get()
 

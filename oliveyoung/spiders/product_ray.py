@@ -1,3 +1,5 @@
+import sys
+sys.path.append('C:/Users/Yeeun Kim/Ray')
 import ray
 import scrapy
 from scrapy.crawler import CrawlerRunner
@@ -5,12 +7,10 @@ from scrapy.utils.project import get_project_settings
 from oliveyoung.items import OliveyoungItem
 from datetime import datetime
 
-
 @ray.remote
 def run_spider(start_url):
     from twisted.internet import reactor
     settings = get_project_settings()
-    settings.set('SPIDER_MODULES', ["oliveyoung.spiders.product_no_ray.py"], priority='cmdline')
     runner = CrawlerRunner(settings)
     deferred = runner.crawl(ProductRaySpider, start_url=start_url)
     deferred.addBoth(lambda _: reactor.stop())
@@ -24,7 +24,7 @@ class ProductRaySpider(scrapy.Spider):
         super().__init__(*args, **kwargs)
         self.start_urls = [start_url] if start_url else []
         # FOR TEST: 페이지 수 제한 설정
-        self.max_page = 3
+        # self.max_page = 3
 
     def parse(self, response):
         for products in response.xpath('//ul[@class="cate_prd_list gtm_cate_list"]'):
@@ -40,8 +40,8 @@ class ProductRaySpider(scrapy.Spider):
         # 다음 페이지로 이동
         curr_page = response.xpath('//strong[@title="현재 페이지"]/text()').get()
 
-        if curr_page and int(curr_page) >= self.max_page: # FOR_TEST
-            return
+        # if curr_page and int(curr_page) >= self.max_page: # FOR_TEST
+        #     return
 
         next_page_url = response.xpath('//strong[@title="현재 페이지"]/following-sibling::a/@data-page-no').get()
 
@@ -53,9 +53,7 @@ class ProductRaySpider(scrapy.Spider):
 
 
 if __name__ == "__main__":
-    print(0)
-    ray.init()
-    print(1)
+    ray.init(ignore_reinit_error=True, include_dashboard=False)
 
     start_time = datetime.now() # 시작 시간 기록
     print(f'Started at: {start_time}')
