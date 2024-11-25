@@ -1,0 +1,52 @@
+apiVersion: ray.io/v1alpha1
+kind: RayCluster
+metadata:
+  name: ray-cluster
+  namespace: yek-ray
+spec:
+  rayVersion: "2.3.0"
+  enableInTreeAutoscaling: true
+  autoscalerOptions:
+  headGroupSpec:
+    serviceType: ClusterIP # Options are ClusterIP, NodePort, and LoadBalancer
+    rayStartParams:
+      dashboard-host: "0.0.0.0"
+    template: # Pod template
+        metadata: # Pod metadata
+        spec: # Pod spec
+            containers:
+            - name: ray-head
+              image: rayproject/ray-ml:2.3.0
+              resources:
+                limits:
+                  cpu: 2
+                  memory: 2Gi
+                requests:
+                  cpu: 2
+                  memory: 2Gi
+              # Keep this preStop hook in each Ray container config.
+              lifecycle:
+                preStop:
+                  exec:
+                    command: ["/bin/sh","-c","ray stop"]
+              ports: # Optional service port overrides
+              - containerPort: 6379
+                name: gcs
+              - containerPort: 8265
+                name: dashboard
+              - containerPort: 10001
+                name: client
+              - containerPort: 8000
+                name: serve
+  workerGroupSpecs:
+  - groupName: small-group
+    replicas: 3
+    minReplicas: 3
+    maxReplicas: 3
+    rayStartParams: {}
+    template: # Pod template
+      spec:
+        containers:
+        - name: ray-worker
+          image: rayproject/ray:latest
+

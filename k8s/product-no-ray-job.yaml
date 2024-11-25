@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: product-no-ray-job
+  namespace: yek-ray
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: product-no-ray
+          image: koreantiger/ray-scrapy:latest
+          imagePullPolicy: Always
+          command: ["python", "./oliveyoung/spiders/product_no_ray.py"]
+          env:
+            - name: MONGO_URI
+              value: "mongodb://mongodb-service:27017"

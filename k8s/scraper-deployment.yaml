@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ray-scrapy
+  namespace: yek-ray
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ray-scrapy
+  template:
+    metadata:
+      labels:
+        app: ray-scrapy
+    spec:
+      containers:
+        - name: ray-scrapy
+          image: koreantiger/ray-scrapy:latest  # 이미지 태그 확인
+          imagePullPolicy: Always
+          env:
+            - name: MONGO_URI
+              value: "mongodb://mongodb-service:27017"
+          resources:
+            requests:
+              cpu: "500m"
+              memory: "512Mi"
+            limits:
+              cpu: "1"
+              memory: "1Gi"

@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongo-clear-job
+  namespace: yek-ray
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: mongo-clear
+          image: mongo:4.4
+          command: ["mongo", "mongodb://mongodb-service:27017/olive_db", "--eval", "db.products.deleteMany({})"]
