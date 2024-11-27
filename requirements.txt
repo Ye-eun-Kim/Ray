@@ -1,5 +1,5 @@
 scrapy==2.8.0
 Twisted==22.10.0
 pymongo==4.10.1
-dnspython==2.7.0
-ray==2.35.0
+dnspython==2.6.1
+ray[client]==2.9.0

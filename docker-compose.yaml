@@ -1,0 +1,74 @@
+version: '3.9'
+
+services:
+  # MongoDB 서비스 설정
+  mongodb:
+    image: mongo:latest  # MongoDB 공식 이미지를 사용
+    container_name: mongodb-service
+    restart: always
+    ports:
+      - "27017:27017"  # 로컬 머신의 27017 포트를 컨테이너의 27017 포트로 매핑
+    volumes:
+      - mongodb_data:/data/db  # 데이터를 영속적으로 저장할 volume 마운트
+    networks:
+      - scraper-network
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+
+  # Scrapy 크롤러 서비스 (Ray 사용 안 함)
+  scrapy_no_ray:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: scrapy_no_ray
+    command: python oliveyoung/spiders/product_no_ray.py  # Scrapy 커맨드 실행
+    depends_on:
+      - mongodb  # MongoDB가 먼저 실행되어야 함
+    environment:
+      - MONGO_URI=mongodb://mongodb-service:27017
+      - MAX_PAGE=3
+    volumes:
+      - .:/usr/src/app  # 현재 디렉토리를 컨테이너의 /app에 마운트
+    networks:
+      - scraper-network
+
+  # Scrapy 크롤러 서비스 (Ray 사용)
+  scrapy_ray:
+    build: .
+    container_name: scrapy_ray
+    command: python oliveyoung/spiders/product_ray.py  # Ray를 사용하는 Scrapy 커맨드 실행
+    depends_on:
+      - mongodb  # MongoDB가 먼저 실행되어야 함
+    environment:
+      - MONGO_URI=mongodb://mongodb-service:27017  # MongoDB URI 환경변수 설정
+      - MAX_PAGE=3
+    volumes:
+      - .:/usr/src/app  # 현재 디렉토리를 컨테이너의 /app에 마운트
+    networks:
+      - scraper-network
+
+  # # Ray 클러스터 서비스
+  # ray:
+  #   image: rayproject/ray:latest  # Ray 공식 이미지를 사용
+  #   container_name: ray-head
+  #   restart: always
+  #   command: ray start --head --port=6379
+  #   ports:
+  #     - "6379:6379"  # Ray의 기본 포트 매핑
+  #   volumes:
+  #     - ray_data:/tmp/ray  # Ray 데이터를 위한 volume 마운트
+  #   networks:
+  #     - scraper-network
+
+# Docker volume 설정
+volumes:
+  mongodb_data:
+    driver: local
+  ray_data:
+    driver: local
+
+# 네트워크 설정
+networks:
+  scraper-network:
+    driver: bridge

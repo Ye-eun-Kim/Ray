@@ -3,6 +3,7 @@ import pymongo
 from itemadapter import ItemAdapter
 
 class OliveyoungPipeline:
+    
     COLLECTION_NAME = "products"
 
     def __init__(self, mongo_uri, mongo_db):

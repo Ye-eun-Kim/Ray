@@ -1,52 +1,77 @@
-apiVersion: ray.io/v1alpha1
+apiVersion: ray.io/v1
 kind: RayCluster
 metadata:
-  name: ray-cluster
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: raycluster-complete
   namespace: yek-ray
 spec:
-  rayVersion: "2.3.0"
-  enableInTreeAutoscaling: true
-  autoscalerOptions:
+  rayVersion: '2.9.0'
   headGroupSpec:
-    serviceType: ClusterIP # Options are ClusterIP, NodePort, and LoadBalancer
+    serviceType: ClusterIP
     rayStartParams:
-      dashboard-host: "0.0.0.0"
-    template: # Pod template
-        metadata: # Pod metadata
-        spec: # Pod spec
-            containers:
-            - name: ray-head
-              image: rayproject/ray-ml:2.3.0
-              resources:
-                limits:
-                  cpu: 2
-                  memory: 2Gi
-                requests:
-                  cpu: 2
-                  memory: 2Gi
-              # Keep this preStop hook in each Ray container config.
-              lifecycle:
-                preStop:
-                  exec:
-                    command: ["/bin/sh","-c","ray stop"]
-              ports: # Optional service port overrides
-              - containerPort: 6379
-                name: gcs
-              - containerPort: 8265
-                name: dashboard
-              - containerPort: 10001
-                name: client
-              - containerPort: 8000
-                name: serve
+      dashboard-host: '0.0.0.0'
+    template:
+      metadata:
+        labels: {}
+      spec:
+        containers:
+        - name: ray-head
+          image: rayproject/ray:2.9.0
+          command: ["/bin/sh","-c","ray stop"]
+          args: [
+            "pip install scrapy==2.8.0 Twisted==22.10.0 pymongo==4.10.1 dnspython==2.6.1 ray[client]==2.9.0"
+          ]
+          ports:
+          - containerPort: 6379
+            name: gcs
+          - containerPort: 8265
+            name: dashboard
+          - containerPort: 10001
+            name: client
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh","-c","ray stop"]
+          volumeMounts:
+            - mountPath: /tmp/ray
+              name: ray-logs
+          resources:
+            limits:
+              cpu: "2"
+              memory: "2Gi"
+            requests:
+              cpu: "2"
+              memory: "2Gi"
+        volumes:
+          - name: ray-logs
+            emptyDir: {}
   workerGroupSpecs:
-  - groupName: small-group
-    replicas: 3
+  - replicas: 3
     minReplicas: 3
     maxReplicas: 3
+    groupName: small-group
     rayStartParams: {}
-    template: # Pod template
+    template:
       spec:
         containers:
         - name: ray-worker
-          image: rayproject/ray:latest
-
+          image: rayproject/ray:2.9.0
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh","-c","ray stop"]
+          volumeMounts:
+            - mountPath: /tmp/ray
+              name: ray-logs
+          resources:
+            requests:
+              cpu: 2
+              memory: 2Gi
+            limits:
+              cpu: 2
+              memory: 2Gi
+        volumes:
+          - name: ray-logs
+            emptyDir: {}
+  

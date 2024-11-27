@@ -1,3 +1,5 @@
+import os
+
 # Scrapy settings for oliveyoung project
 #
 # For simplicity, this file contains only settings considered important or
@@ -12,8 +14,12 @@ BOT_NAME = "oliveyoung"
 SPIDER_MODULES = ["oliveyoung.spiders"]
 NEWSPIDER_MODULE = "oliveyoung.spiders"
 
-MONGO_URI = "mongodb://localhost:27017"
-MONGO_DATABASE = "olive_db"
+# MONGO_URI = "mongodb://localhost:27017"
+# MONGO_DATABASE = "olive_db"
+# MongoDB URI를 환경 변수로부터 읽어옵니다.
+MONGO_URI = os.getenv('MONGO_URI')  # 환경 변수에서 읽고, 없으면 기본값 사용
+MONGO_DATABASE = 'olive_db'
+
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
