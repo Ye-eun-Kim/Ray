@@ -1,10 +1,15 @@
+import sys
+import os
+
+# 프로젝트 루트 디렉터리를 sys.path에 추가
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 import scrapy
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
 from oliveyoung.items import OliveyoungItem
 from twisted.internet import reactor
 from datetime import datetime
-import os
 
 class ProductNoRaySpider(scrapy.Spider):
     name = "oliveyoung_no_ray"
@@ -15,8 +20,11 @@ class ProductNoRaySpider(scrapy.Spider):
     start_urls = [
         'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=100000100010014&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=48&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=0&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat100000100010014_Small&amplitudePageGubun=&t_page=&t_click=&midCategory=%EC%97%90%EC%84%BC%EC%8A%A4%2F%EC%84%B8%EB%9F%BC%2F%EC%95%B0%ED%94%8C&smallCategory=%EC%A0%84%EC%B2%B4&checkBrnds=&lastChkBrnd=',
         'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=100000100010015&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=48&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=1&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat100000100010015_Small&amplitudePageGubun=&t_page=&t_click=&midCategory=%ED%81%AC%EB%A6%BC&smallCategory=%EC%A0%84%EC%B2%B4&checkBrnds=&lastChkBrnd=',
-        'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=100000100010013&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=48&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=2&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat100000100010013_Small&amplitudePageGubun=&t_page=&t_click=&midCategory=%EC%8A%A4%ED%82%A8%2F%ED%86%A0%EB%84%88&smallCategory=%EC%A0%84%EC%B2%B4&checkBrnds=&lastChkBrnd='
-    ]
+        'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=100000100010013&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=48&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=2&aShowCnt=0&bShowCnt=0&cShowCnt=0&trackingCd=Cat100000100010013_Small&amplitudePageGubun=&t_page=&t_click=&midCategory=%EC%8A%A4%ED%82%A8%2F%ED%86%A0%EB%84%88&smallCategory=%EC%A0%84%EC%B2%B4&checkBrnds=&lastChkBrnd=',
+        'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=100000100020001&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=24&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=0&aShowCnt=&bShowCnt=&cShowCnt=&trackingCd=Cat100000100020001_Small&amplitudePageGubun=&t_page=&t_click=&midCategory=%EB%B2%A0%EC%9D%B4%EC%8A%A4%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85&smallCategory=%EC%A0%84%EC%B2%B4&checkBrnds=&lastChkBrnd='
+        'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=100000100020006&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=24&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=0&aShowCnt=&bShowCnt=&cShowCnt=&trackingCd=Cat100000100020006_Small&amplitudePageGubun=&t_page=&t_click=&midCategory=%EB%A6%BD%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85&smallCategory=%EC%A0%84%EC%B2%B4&checkBrnds=&lastChkBrnd=',
+        'https://www.oliveyoung.co.kr/store/display/getMCategoryList.do?dispCatNo=100000100020007&fltDispCatNo=&prdSort=01&pageIdx=1&rowsPerPage=24&searchTypeSort=btn_thumb&plusButtonFlag=N&isLoginCnt=0&aShowCnt=&bShowCnt=&cShowCnt=&trackingCd=Cat100000100020007_Small&amplitudePageGubun=&t_page=&t_click=&midCategory=%EC%95%84%EC%9D%B4%EB%A9%94%EC%9D%B4%ED%81%AC%EC%97%85&smallCategory=%EC%A0%84%EC%B2%B4&checkBrnds=&lastChkBrnd='
+        ]
 
     def parse(self, response):
         for products in response.xpath('//ul[@class="cate_prd_list gtm_cate_list"]'):
