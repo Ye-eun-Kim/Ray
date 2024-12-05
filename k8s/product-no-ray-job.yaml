@@ -15,3 +15,10 @@ spec:
           env:
             - name: MONGO_URI
               value: "mongodb://mongodb-service:27017"
+          resources:
+            requests:
+              cpu: "21"    # worker nodes 총합: 2 CPU * 3 workers
+              memory: "42Gi"  # worker nodes 총합: 2Gi * 3 workers
+            limits:
+              cpu: "21"
+              memory: "42Gi"

@@ -17,7 +17,7 @@ spec:
       spec:
         containers:
         - name: ray-head
-          image: rayproject/ray:2.9.0
+          image: koreantiger/ray-scrapy:latest
           ports:
           - containerPort: 6379
             name: gcs
@@ -43,16 +43,16 @@ spec:
           - name: ray-logs
             emptyDir: {}
   workerGroupSpecs:
-  - replicas: 20
-    minReplicas: 20
-    maxReplicas: 20
+  - replicas: 3
+    minReplicas: 3
+    maxReplicas: 3
     groupName: small-group
     rayStartParams: {}
     template:
       spec:
         containers:
         - name: ray-worker
-          image: rayproject/ray:2.9.0
+          image: koreantiger/ray-scrapy:latest
           lifecycle:
             preStop:
               exec:

@@ -1,16 +1,25 @@
-import sys
-import os
+# import sys
+# import os
 
-# 프로젝트 루트 디렉터리를 sys.path에 추가
-sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+# # 프로젝트 루트 디렉터리를 sys.path에 추가
+# sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 
 import ray
 import scrapy
 from scrapy.crawler import CrawlerRunner
 from scrapy.utils.project import get_project_settings
-from oliveyoung.items import OliveyoungItem
+# from oliveyoung.items import OliveyoungItem
 from datetime import datetime
+
+from scrapy.item import Item, Field
+class OliveyoungItem(Item):
+    _id = Field()
+    name = Field()
+    price = Field()
+    brand = Field()
+    url = Field()
+    time = Field()
 
 
 
@@ -43,6 +52,7 @@ class ProductRaySpider(scrapy.Spider):
                 item['price'] = product.xpath('.//span[@class="tx_cur"]/span[@class="tx_num"]/text()').get().strip()
                 item['url'] = product.xpath('./a/@href').get()
                 item['time'] = datetime.now().strftime('%m-%d %H:%M')
+                print('item: ', item['name'])
                 yield item
 
         # 다음 페이지로 이동
@@ -61,7 +71,8 @@ class ProductRaySpider(scrapy.Spider):
 
 
 if __name__ == "__main__":
-    ray.init()
+    ray.init(address='ray://localhost:10001')
+    # ray.init(address='auto') # 도커 버전
 
     start_time = datetime.now() # 시작 시간 기록
     print(f'Started at: {start_time}')

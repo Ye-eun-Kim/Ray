@@ -28,7 +28,7 @@ ITEM_PIPELINES = {
 }
 
 
-LOG_LEVEL = 'ERROR'
+LOG_LEVEL = 'INFO'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
